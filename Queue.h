@@ -6,7 +6,7 @@ class Queue
 {
 private:
 
-    std::vector<T> data;
+    std::vector<T> mData;
     int mTail = 0;
     int mHead = 0;
     int mCount = 0;
@@ -14,12 +14,12 @@ private:
     void resize() 
     {
         std::vector<T> newData;
-        newData.resize(data.size() * 2);
+        newData.resize(mData.size() * 2);
         for (int i = 0; i < mCount; i++)
         {
-            newData[i] = data[(mTail + i) % data.size()];
+            newData[i] = mData[(mTail + i) % mData.size()];
         }
-        data = std::move(newData);
+        mData = std::move(newData);
         mTail = 0;
         mHead = mCount;
     }
@@ -28,25 +28,25 @@ public:
 
     Queue()
     {
-        data.resize(4);
+        mData.resize(4);
     }
 
     void push(T value)
     {
-        if (mCount == (int)data.size())
+        if (mCount == (int)mData.size())
         {
             resize();
         }
 
-        data[mHead] = value;
-        mHead = (mHead + 1) % data.size();
+        mData[mHead] = value;
+        mHead = (mHead + 1) % mData.size();
         mCount++;
     }
 
     void pop()
     {
         if (mCount == 0) return;
-        mTail = (mTail + 1) % data.size();
+        mTail = (mTail + 1) % mData.size();
         mCount--;
     }
 
@@ -59,7 +59,7 @@ public:
 
     T front() const
     {
-        return data[mTail];
+        return mData[mTail];
     }
 
     int size() const
