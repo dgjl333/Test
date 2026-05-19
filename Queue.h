@@ -1,69 +1,89 @@
 #pragma once
-#include <vector>
 
 template<typename T>
 class Queue
 {
 private:
 
-    std::vector<T> mData;
-    int mTail = 0;
-    int mHead = 0;
-    int mCount = 0;
-
-    void resize() 
+    struct Node
     {
-        std::vector<T> newData;
-        newData.resize(mData.size() * 2);
-        for (int i = 0; i < mCount; i++)
-        {
-            newData[i] = mData[(mTail + i) % mData.size()];
-        }
-        mData = std::move(newData);
-        mTail = 0;
-        mHead = mCount;
-    }
+        T value;
+        Node* next = nullptr;
+    };
+
+    Node* mTail = nullptr;
+    Node* mHead = nullptr;
+
+    int mCount = 0;
 
 public:
 
-    Queue()
+    Queue() = default;
+
+    ~Queue()
     {
-        mData.resize(4);
+        clear();
     }
 
     void push(T value)
     {
-        if (mCount == (int)mData.size())
+        Node* newNode = new Node();
+        newNode->value = value;
+
+        if (mHead)
         {
-            resize();
+            mHead->next = newNode;
+        }
+        else
+        {
+            mTail = newNode;
         }
 
-        mData[mHead] = value;
-        mHead = (mHead + 1) % mData.size();
+        mHead = newNode;
         mCount++;
     }
 
     void pop()
     {
-        if (mCount == 0) return;
-        mTail = (mTail + 1) % mData.size();
+        if (mCount == 0)
+        {
+            return;
+        }
+
+        Node* oldTail = mTail;
+
+        mTail = mTail->next;
+
+        delete oldTail;
+
         mCount--;
+
+        if (mCount == 0)
+        {
+            mHead = nullptr;
+        }
     }
 
     void clear()
     {
-        mTail = 0;
-        mHead = 0;
+        while (mTail)
+        {
+            Node* next = mTail->next;
+            delete mTail;
+            mTail = next;
+        }
+
+        mHead = nullptr;
         mCount = 0;
-	}
+    }
 
     T front() const
     {
-        return mData[mTail];
+        return mTail->value;
     }
 
     int size() const
     {
         return mCount;
-	}
+    }
 };
